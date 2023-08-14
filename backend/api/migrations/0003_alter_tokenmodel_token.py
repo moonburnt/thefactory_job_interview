@@ -6,7 +6,7 @@ import uuid
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("tgbot", "0002_tokenmodel"),
+        ("api", "0002_tokenmodel"),
     ]
 
     operations = [

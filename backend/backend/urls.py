@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from tgbot.views import MessageViewSet, RegisterUserView, TokenView
+from api.views import MessageViewSet, RegisterUserView, TokenView
 import logging
 
 log = logging.getLogger(__name__)
