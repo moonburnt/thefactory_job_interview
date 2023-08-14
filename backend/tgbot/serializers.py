@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import MessageModel
+from .models import MessageModel, TokenModel
 import logging
 
 log = logging.getLogger(__name__)
@@ -41,3 +41,25 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TokenModel
+        fields = ("token",)
+
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        else:
+            raise serializers.ValidationError("Expected authenticated user")
+
+        if self.Meta.model.objects.filter(user=user).count() > 0:
+            raise serializers.ValidationError("User already has token")
+
+        validated_data["user"] = user
+
+        return validated_data

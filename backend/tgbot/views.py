@@ -24,6 +24,14 @@ class CreateOnlyModelViewSet(
     pass
 
 
+class CreateListViewSet(
+    mixins.CreateModelMixin,
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    pass
+
+
 class IsUnauthenticated(BasePermission):
     def has_permission(self, request, view):
         return not (request.user and request.user.is_authenticated)
@@ -36,7 +44,7 @@ class MessageViewSet(CreateRetrieveListModelViewSet):
 
     def get_queryset(self):
         if not (self.request.user and self.request.user.is_authenticated):
-            return models.MessageModel.objects.none()
+            return self.queryset.none()
         else:
             return super().get_queryset().filter(author=self.request.user)
 
@@ -50,3 +58,15 @@ class RegisterUserView(CreateOnlyModelViewSet):
         response = super().create(request, *args, **kwargs)
 
         return HttpResponseRedirect(redirect_to="/api/auth/login/")
+
+
+class TokenView(CreateListViewSet):
+    serializer_class = serializers.TokenSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = models.TokenModel.objects.all()
+
+    def get_queryset(self):
+        if not (self.request.user and self.request.user.is_authenticated):
+            return self.queryset.none()
+        else:
+            return super().get_queryset().filter(user=self.request.user)
