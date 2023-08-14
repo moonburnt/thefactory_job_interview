@@ -9,7 +9,7 @@ class TgUserModel(models.Model):
     token = models.OneToOneField(
         to=TokenModel,
         on_delete=models.CASCADE,
-        related_name="tg_bot_token",
+        related_name="tg_user",
         null=True,
         default=None,
     )
