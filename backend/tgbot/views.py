@@ -26,13 +26,19 @@ class CreateOnlyModelViewSet(
 
 class IsUnauthenticated(BasePermission):
     def has_permission(self, request, view):
-        return not bool(request.user and request.user.is_authenticated)
+        return not (request.user and request.user.is_authenticated)
 
 
 class MessageViewSet(CreateRetrieveListModelViewSet):
     serializer_class = serializers.MessageSerializer
     permission_classses = [IsAuthenticated]
     queryset = models.MessageModel.objects.all()
+
+    def get_queryset(self):
+        if not (self.request.user and self.request.user.is_authenticated):
+            return models.MessageModel.objects.none()
+        else:
+            return super().get_queryset().filter(author=self.request.user)
 
 
 class RegisterUserView(CreateOnlyModelViewSet):

@@ -9,8 +9,20 @@ log = logging.getLogger(__name__)
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = MessageModel
-        fields = "__all__"
-        read_only_fields = ("author",)
+        # fields = "__all__"
+        exclude = ("author",)
+        # read_only_fields = ("author",)
+
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            validated_data["author"] = request.user
+        else:
+            raise serializers.ValidationError("Expected authenticated user")
+
+        return validated_data
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
