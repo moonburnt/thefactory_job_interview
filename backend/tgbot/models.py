@@ -7,9 +7,9 @@ log = logging.getLogger(__name__)
 
 class MessageModel(models.Model):
     author = models.ForeignKey(
-        to = get_user_model(),
-        on_delete= models.CASCADE,
-        related_name = "messages",
+        to=get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="messages",
     )
 
     message = models.TextField()
