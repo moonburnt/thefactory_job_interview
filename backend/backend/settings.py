@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "django_extensions",
     # apps
     "api",
+    "bot",
 ]
 
 MIDDLEWARE = [
