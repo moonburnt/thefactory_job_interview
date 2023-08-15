@@ -46,7 +46,7 @@ def on_message_save(sender, instance, **kwargs):
                     url=settings.BOT_SETTINGS["URL"],
                     json={
                         "chat_id": str(tg_user.user_id),
-                        "message": "asda",
+                        "message": f"{instance.author.first_name}, я получил от тебя сообщение: '{instance.message}'",
                     },
                 )
             except Exception as e:

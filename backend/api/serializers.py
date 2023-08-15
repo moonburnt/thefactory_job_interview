@@ -33,6 +33,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             "first_name",
             "password",
         )
+        extra_kwargs = {k: {"required": True} for k in fields}
 
     def create(self, validated_data):
         password = validated_data.pop("password")
