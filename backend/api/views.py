@@ -57,7 +57,7 @@ class RegisterUserView(CreateOnlyModelViewSet):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
 
-        return HttpResponseRedirect(redirect_to="/api/auth/login/")
+        return HttpResponseRedirect(redirect_to="/auth/login/")
 
 
 class TokenView(CreateListViewSet):

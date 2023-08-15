@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandParser
 from django.conf import settings
+from dotenv import load_dotenv
 from bot.services import make_bot
 from os import environ
 from sys import exit
@@ -12,7 +13,7 @@ class Command(BaseCommand):
     help = "Run telegram bot"
 
     def handle(self, *args, **options):
-        settings.IS_BOT_INSTANCE = True
+        load_dotenv()
 
         token_name = "TG_TOKEN"
         token = environ.get(token_name)
