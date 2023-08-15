@@ -1,10 +1,11 @@
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiohttp import web
 from .models import TgUserModel
 from api.models import TokenModel
-from uuid import UUID
+import asyncio
 from typing import Optional
-
+from uuid import UUID
 import logging
 
 log = logging.getLogger(__name__)
@@ -20,23 +21,48 @@ async def on_shutdown(dispatcher: Dispatcher):
 
 
 class EchoBot(Bot):
-    def __init__(self, token):
+    def __init__(self, token: str):
         super().__init__(token=token)
         self.dp = Dispatcher(self, storage=MemoryStorage())
+        self.web_app = web.Application()
 
-    def __new__(cls, *args, **kwargs):
-        # Turning bot into singletone, so it can be accessed from other modules
-        if not hasattr(cls, "instance"):
-            cls.instance = super().__new__(cls)
-            return cls.instance
+    def run(self, host, port):
+        print("Running echo bot")
+        asyncio.get_event_loop().create_task(
+            web._run_app(
+                app=self.web_app,
+                host=host,
+                port=port,
+            )
+        )
 
-    def run(self):
         executor.start_polling(
             self.dp,
             on_startup=on_startup,
             on_shutdown=on_shutdown,
             skip_updates=True,
         )
+
+
+def _configure_web_app(bot: EchoBot) -> EchoBot:
+    routes = web.RouteTableDef()
+
+    @routes.post("/")
+    async def send_message(request):
+        data = await request.json()
+        try:
+            await bot.send_message(
+                data["chat_id"],
+                data["message"],
+            )
+        except Exception as e:
+            log.warning(e)
+
+        return web.Response()
+
+    bot.web_app.add_routes(routes)
+
+    return bot
 
 
 def make_bot(token: str) -> EchoBot:
@@ -53,8 +79,6 @@ def make_bot(token: str) -> EchoBot:
         ).afirst()
         if not user_model:
             user_model = await TgUserModel.objects.acreate(user_id=message.from_user.id)
-
-        print(user_model)
 
         resp = "Hello, I'm echo bot."
 
@@ -98,5 +122,7 @@ def make_bot(token: str) -> EchoBot:
                 await user_model.asave(update_fields=("token",))
 
                 await message.reply(f"Successfully attached token '{message.text}'")
+
+    bot = _configure_web_app(bot)
 
     return bot

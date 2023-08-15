@@ -1,17 +1,3 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from api.views import MessageViewSet, RegisterUserView, TokenView
-import logging
+from django.conf import settings
 
-log = logging.getLogger(__name__)
-
-
-router = DefaultRouter()
-router.register("message", MessageViewSet)
-router.register("auth/register", RegisterUserView)
-router.register("token", TokenView)
-
-urlpatterns = [
-    path("", include(router.urls)),
-    path("auth/", include("rest_framework.urls")),
-]
+from api.urls import *

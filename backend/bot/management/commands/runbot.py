@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandParser
+from django.conf import settings
 from bot.services import make_bot
 from os import environ
 from sys import exit
@@ -11,6 +12,8 @@ class Command(BaseCommand):
     help = "Run telegram bot"
 
     def handle(self, *args, **options):
+        settings.IS_BOT_INSTANCE = True
+
         token_name = "TG_TOKEN"
         token = environ.get(token_name)
         if token is None:
@@ -23,4 +26,7 @@ class Command(BaseCommand):
         bot = make_bot(
             token=token,
         )
-        bot.run()
+        bot.run(
+            host=settings.BOT_SETTINGS["HOST"],
+            port=settings.BOT_SETTINGS["PORT"],
+        )

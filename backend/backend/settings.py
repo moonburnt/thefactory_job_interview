@@ -95,3 +95,10 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_REDIRECT_URL = "/"
+
+
+BOT_SETTINGS = {
+    "HOST": "127.0.0.1",
+    "PORT": 8001,
+}
+BOT_SETTINGS["URL"] = f"http://{BOT_SETTINGS['HOST']}:{BOT_SETTINGS['PORT']}"
